@@ -60,7 +60,7 @@ module.exports = {
                 });
             }
 
-            await Todos.findOneAndDelete({
+            await Todos.findByIdAndDelete({
                 _id: todoId,
                 user: user_id
             });
