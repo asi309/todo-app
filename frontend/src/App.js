@@ -1,7 +1,6 @@
 import React from 'react';
 import { Container } from 'reactstrap';
 
-import LoginComponent from './components/LoginComponent';
 import Routes from './routes';
 
 import './App.css';
