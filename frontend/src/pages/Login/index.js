@@ -1,16 +1,63 @@
 import React, { useState } from 'react';
-import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
+import { Alert, Button, Form, FormGroup, Input } from 'reactstrap';
 
-export default function Login () {
+import api from '../../services/api';
+
+export default function Login ({ history }) {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState(false);
+    const [message, setMessage] = useState('');
+    
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const response = await api.post('/login', { email, password });
+        const userId = response.data.email || false;
+        
+        try {
+            if (userId) {
+                localStorage.setItem('userId', userId);
+                history.push('/dashboard');
+            } else {
+                const { message } = response.data;
+                console.log(message);
+                setError(true);
+                setMessage(message);
+                setTimeout(() => {
+                    setError(false);
+                    setMessage('');
+                }, 3000);
+            }
+        } catch (error) {
+            setError(true);
+            setMessage('ERROR: Server cannot process the request');
+        }
+    }
+    
     return (
         <Form>
             <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-                <Input type="email" name="email" id="exampleEmail" placeholder="Your email" />
+                <Input
+                    type="email"
+                    id="email"
+                    placeholder="Your email"
+                    onChange={ (e) => setEmail(e.target.value) }
+                />
             </FormGroup>
             <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-                <Input type="password" name="password" id="examplePassword" placeholder="Password" />
+                <Input
+                    type="password" 
+                    id="examplePassword" 
+                    placeholder="Password" 
+                    onChange={ (e) => setPassword(e.target.value) }
+                />
             </FormGroup>
-            <Button color="primary">Submit</Button>
+            <Button color="primary" onClick={ (e) => handleSubmit(e) }>Submit</Button>
+            <Button color="primary" onClick={ () => history.push('/register') }>Register</Button>
+            {
+                error ? <Alert color='danger' className="mb-2 mr-sm-2 mb-sm-0">{ message }</Alert> : ''
+            }
         </Form>
     );
 }

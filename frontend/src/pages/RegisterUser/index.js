@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
-import { Button, ButtonGroup, Container, Form, FormGroup, Input } from 'reactstrap';
+import { Alert, Button, ButtonGroup, Container, Form, FormGroup, Input } from 'reactstrap';
 
-export default function RegisterUser () {
+import api from '../../services/api';
+
+export default function RegisterUser ({ history }) {
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    
     return (
         <Container>
             <Form>
