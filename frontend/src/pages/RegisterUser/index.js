@@ -8,25 +8,80 @@ export default function RegisterUser ({ history }) {
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState(false);
+    const [message, setMessage] = useState('');
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        try{
+            const response = await api.post('/users/register', { firstName, lastName, email, password });
+            const user = response.data.user || false;
+            if (user) {
+                localStorage.setItem('userId', user._id);
+                history.push('/dashboard');
+            } else {
+                setError(true);
+                setMessage(response.data.message);
+                setTimeout(() => {
+                    setError(false);
+                    setMessage('');
+                }, 3000);
+            }
+        } catch (error) {
+            setError(true);
+            setMessage('ERROR: The server cannot process the request');
+        }
+
+
+    }
     
     return (
         <Container>
-            <Form>
+            <Form onSubmit={ handleSubmit }>
                 <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-                    <Input type="text" name="firstName" id="firstName" placeholder="Your first name" />
+                    <Input
+                        type="text"
+                        id="firstName"
+                        placeholder="Your first name"
+                        value={firstName}
+                        onChange={ (e) => setFirstName(e.target.value) }
+                    />
                 </FormGroup>
                 <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-                    <Input type="text" name="lastName" id="lastName" placeholder="Your last name" />
+                    <Input                        
+                        type="text" 
+                        id="lastName" 
+                        placeholder="Your last name"
+                        value={lastName}
+                        onChange={ (e) => setLastName(e.target.value) }
+                    />
                 </FormGroup>
                 <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-                    <Input type="email" name="email" id="email" placeholder="johndoe@example.com" />
+                    <Input 
+                        type="email"
+                        id="email"
+                        placeholder="Your email"
+                        value={email}
+                        onChange={ (e) => setEmail(e.target.value) }
+                    />
                 </FormGroup>
                 <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-                    <Input type="password" name="password" id="password" placeholder="Your password" />
+                    <Input 
+                        type="password"
+                        id="password"
+                        placeholder="Your password"
+                        value={password}
+                        onChange={ (e) => setPassword(e.target.value) }
+                    />
                 </FormGroup>
-                <ButtonGroup>
+                <ButtonGroup className="mb-2 mr-sm-2 mb-sm-0">
                     <Button color="primary">Signup</Button>
+                    <Button onClick={ () => history.push('/') }>Login</Button>
                 </ButtonGroup>
+                {
+                    error ? <Alert color='danger' className="mb-2 mr-sm-2 mb-sm-0">{ message }</Alert> : ''
+                }
             </Form>
         </Container>
     );

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, Button, Form, FormGroup, Input } from 'reactstrap';
+import { Alert, Button, ButtonGroup, Form, FormGroup, Input } from 'reactstrap';
 
 import api from '../../services/api';
 
@@ -53,8 +53,10 @@ export default function Login ({ history }) {
                     onChange={ (e) => setPassword(e.target.value) }
                 />
             </FormGroup>
-            <Button color="primary" onClick={ (e) => handleSubmit(e) }>Submit</Button>
-            <Button color="primary" onClick={ () => history.push('/register') }>Register</Button>
+            <ButtonGroup className="mb-2 mr-sm-2 mb-sm-0">
+                <Button onClick={ (e) => handleSubmit(e) }>Submit</Button>
+                <Button onClick={ () => history.push('/register') }>Register</Button>
+            </ButtonGroup>
             {
                 error ? <Alert color='danger' className="mb-2 mr-sm-2 mb-sm-0">{ message }</Alert> : ''
             }

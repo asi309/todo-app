@@ -7,6 +7,18 @@ module.exports = {
         try {
             const { firstName, lastName, password, email } = req.body;
 
+            if (!firstName || !lastName || !password || !email) {
+                return res.status(200).json({
+                    message: 'Required field missing'
+                });
+            }
+            
+            if ((firstName.match(/[^a-zA-Z]+/g) || lastName.match(/[^a-zA-Z]/g)) !== null) {
+                return res.status(200).json({
+                    message: 'Enter names correctly. Names cannot contain special characters'
+                });
+            }
+
             const existing_user = await User.findOne({ email });
 
             if (!existing_user) {
@@ -18,10 +30,15 @@ module.exports = {
                     password: hashedPassword
                 });
 
-                return res.json(user);
+                return res.json({user :{
+                    _id: user._id,
+                    firstName,
+                    lastName,
+                    email: user.email
+                }});
             }
 
-            return res.status(400).json({
+            return res.status(200).json({
                 message: 'Email already in use'
             });
 

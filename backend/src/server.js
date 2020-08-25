@@ -13,9 +13,6 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 
-app.use(cors());
-app.use(express.json());
-
 try {
     mongoose.connect(process.env.MONGO_DB_CONNECTION, {
         useNewUrlParser: true,
@@ -25,6 +22,8 @@ try {
     console.log(error);
 }
 
+app.use(cors());
+app.use(express.json());
 app.use(routes);
 
 app.listen(PORT, () => {
