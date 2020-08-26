@@ -18,7 +18,7 @@ routes.post('/login', LoginController.store);
 //Todos
 routes.post('/todos/add', TodosController.createTodo);
 routes.get('/todos/:todoId', TodosController.getTodoById);
-routes.get('/todos/', TodosController.getAllTodos);
+routes.get('/todos/', TodosController.getTodosByUser);
 routes.delete('/todos/delete/:todoId', TodosController.deleteTodo);
 
 //User Registration

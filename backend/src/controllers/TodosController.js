@@ -21,7 +21,7 @@ module.exports = {
                 });
             }
     
-            const existing_todo = await Todos.findOne({ title });
+            const existing_todo = await Todos.findOne({ title, user });
     
             if (!existing_todo) {
                 const todo = await Todos.create({
@@ -61,8 +61,7 @@ module.exports = {
             }
 
             await Todos.findByIdAndDelete({
-                _id: todoId,
-                user: user_id
+                _id: todoId
             });
             
             return res.status(204).send();
@@ -85,9 +84,8 @@ module.exports = {
                 });
             }
 
-            const todo = await Todos.find({
-                _id: todoId,
-                user
+            const todo = await Todos.findOne({
+                _id: todoId
             });
 
             if (todo) {
@@ -101,7 +99,7 @@ module.exports = {
 
     },
 
-    async getAllTodos (req, res) {
+    async getTodosByUser (req, res) {
         const { user_id } = req.headers;
 
         try {
