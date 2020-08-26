@@ -13,7 +13,7 @@ export default function Login ({ history }) {
         e.preventDefault();
 
         const response = await api.post('/login', { email, password });
-        const userId = response.data.email || false;
+        const userId = response.data._id || false;
         
         try {
             if (userId) {
