@@ -11,3 +11,86 @@ body,
 #root {
   min-width: 100%;
 }
+
+body,
+input,
+button {
+  font-family: 'Roboto', Arial, Helvetica, sans-serif;
+  font-size: 16px;
+}
+
+body {
+  background: rgb(8, 2, 64);
+  background: linear-gradient(
+    90deg,
+    rgba(8, 2, 64, 1) 0%,
+    rgba(46, 15, 128, 1) 31%,
+    rgba(107, 3, 230, 0.9822128680573792) 100%
+  );
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 3rem 1rem;
+}
+
+.container h1 {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.content-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 60px;
+  border-radius: 6px;
+  padding: 0 40px;
+}
+
+.content-box input {
+  background-color: rgba(255,255,255, 0.9);
+  height: 50px;
+  margin-bottom: 20px;
+}
+
+.content-box .btn-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  padding-top: 10px;
+}
+
+.content-box .btn {
+  border: 0;
+  background-color: rgba(60, 60, 60, 0.6);
+  padding: 0 20px;
+  border-radius: 3px;
+  margin-bottom: 50px;
+  height: 40px;
+  width: 75%;
+}
+
+.content-box .secondary-btn {
+  margin-top: 20px;
+  margin-bottom: 0;
+  color: rgba(255,255,255, 0.9);
+}
+
+@media (min-width: 400px) {
+  .content-box {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+
+  .content-box .input {
+    background-color: rgba(20, 20, 20, 0.8);
+  }
+
+  .content-box .secondary-btn {
+    color: rgba(133, 31, 252, 1);
+  }
+}

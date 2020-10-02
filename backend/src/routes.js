@@ -7,9 +7,9 @@ const UserController = require('./controllers/UserController');
 const routes = express.Router();
 
 routes.get('/', (req, res) => {
-    res.json({
-        status: 'OK'
-    });
+  res.json({
+    status: 'OK',
+  });
 });
 
 //Login
