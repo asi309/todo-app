@@ -33,7 +33,10 @@ module.exports = {
 
         await todo.populate('user', '-password').execPopulate();
 
-        return res.json(todo);
+        return res.json({
+          message: 'Todo created successfully',
+          todo,
+        });
       }
 
       return res.status(200).json({

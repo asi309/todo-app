@@ -1,13 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  Alert,
-  Button,
-  Container,
-  Form,
-  FormGroup,
-  Input,
-} from 'reactstrap';
+import { Alert, Button, Container, Form, FormGroup, Input } from 'reactstrap';
 
 import api from '../../services/api';
 
@@ -44,41 +37,44 @@ export default function Login({ history }) {
   };
 
   return (
-    <Container>
-      <Form>
-        <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-          <Input
-            type="email"
-            id="email"
-            placeholder="Your email"
-            onChange={(e) => setEmail(e.target.value)}
-            autoFocus
-            autoComplete="off"
-          />
-        </FormGroup>
-        <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-          <Input
-            type="password"
-            id="examplePassword"
-            placeholder="Password"
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="off"
-          />
-        </FormGroup>
-        <FormGroup className="mb-2 mr-sm-2 mb-sm-0 btn-container">
-          <Button onClick={(e) => handleSubmit(e)} className="submit-btn">
-            Submit
-          </Button>
-          <Link to="/register" className="secondary-btn">Register instead?</Link>
-        </FormGroup>
-        {error ? (
-          <Alert color="danger" className="mb-2 mr-sm-2 mb-sm-0">
-            {message}
-          </Alert>
-        ) : (
-          ''
-        )}
-      </Form>
-    </Container>
+    <div className="content-box" style={{width: "50%"}}>
+      <Container>
+        <Form style={{width: "75%"}}>
+          <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+            <Input
+              type="email"
+              id="email"
+              placeholder="Your email"
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="off"
+            />
+          </FormGroup>
+          <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+            <Input
+              type="password"
+              id="examplePassword"
+              placeholder="Password"
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="off"
+            />
+          </FormGroup>
+          <FormGroup className="mb-2 mr-sm-2 mb-sm-0 btn-container">
+            <Button onClick={(e) => handleSubmit(e)} className="submit-btn">
+              Submit
+            </Button>
+            <Link to="/register" className="secondary-btn">
+              Register instead?
+            </Link>
+          </FormGroup>
+          {error ? (
+            <Alert color="danger" className="mb-2 mr-sm-2 mb-sm-0">
+              {message}
+            </Alert>
+          ) : (
+            ''
+          )}
+        </Form>
+      </Container>
+    </div>
   );
 }

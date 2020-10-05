@@ -9,9 +9,7 @@ function App() {
   return (
     <Container>
       <h1>Todo App</h1>
-      <div className="content-box">
-        <Routes />
-      </div>
+      <Routes />
     </Container>
   );
 }

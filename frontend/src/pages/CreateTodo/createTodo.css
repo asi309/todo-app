@@ -1,0 +1,31 @@
+.content-box form {
+  width: 50%;
+}
+
+div.content-box div.form-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+div.form-group input,
+div.form-group textarea {
+  margin-bottom: 20px;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: rgba(20, 20, 20, 0.8);
+}
+
+@media (min-width: 400px) {
+  div.form-group input,
+  div.form-group textarea {
+    margin-bottom: 20px;
+    background-color: rgba(20, 20, 20, 0.8);
+    color: rgba(255, 255, 255);
+  }
+
+  div.form-group textarea::placeholder {
+    color: rgba(255, 255, 255);
+  }
+}

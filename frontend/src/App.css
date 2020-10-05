@@ -10,6 +10,9 @@ html,
 body,
 #root {
   min-width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 body,
@@ -39,9 +42,10 @@ body {
 
 .container h1 {
   color: rgba(255, 255, 255, 0.9);
+  text-align: center;
 }
 
-.content-box {
+.container .content-box {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -53,6 +57,7 @@ body {
 
 .content-box input {
   background-color: rgba(255,255,255, 0.9);
+  color: rgba(20, 20, 20, 0.8);
   height: 50px;
   margin-bottom: 20px;
 }
@@ -86,8 +91,13 @@ body {
     background-color: rgba(0, 0, 0, 0.8);
   }
 
-  .content-box .input {
+  .content-box input {
     background-color: rgba(20, 20, 20, 0.8);
+    color: rgba(255, 255, 255);
+  }
+
+  .content-box input::placeholder {
+    color: rgba(255,255,255);
   }
 
   .content-box .secondary-btn {
