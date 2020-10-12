@@ -5,7 +5,7 @@ import api from '../../services/api';
 
 import './createTodo.css';
 
-export default function CreateTodo({ history }) {
+export default function CreateTodo({ history, match }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [targetDate, setTargetDate] = useState('');
@@ -14,12 +14,36 @@ export default function CreateTodo({ history }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const userId = localStorage.getItem('userId');
+  let todo;
 
   useEffect(() => {
     if (!userId) {
       history.push('/');
+    } else {
+      findTodo();
     }
   }, [userId]);
+
+  const findTodo = async () => {
+    if (match.params.todoId) {
+      try {
+        todo = await api.get(`/todos/${match.params.todoId}`, {
+          headers: { user_id: userId },
+        });
+        setTitle(todo.data.title);
+        setDescription(todo.data.description);
+        const todoTargetDate = new Date(+todo.data.targetDate);
+        const targetDateString = todoTargetDate.toISOString().substr(0, 10);
+        setTargetDate(targetDateString);
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      setTitle('');
+      setDescription('');
+      setTargetDate('');
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,14 +52,28 @@ export default function CreateTodo({ history }) {
     const endDate = Date.parse(targetDate);
 
     try {
+      let response;
       if (title !== '' && description !== '' && targetDate !== '') {
-        const response = await api.post(
-          '/todos/add',
-          { title, description, startDate, targetDate: endDate },
-          {
-            headers: { user_id: userId },
-          }
-        );
+        if (match.params.todoId) {
+          response = await api.patch(
+            `/todos/${match.params.todoId}`,
+            {
+              title,
+              description,
+              startDate,
+              targetDate: endDate,
+            },
+            { headers: { user_id: userId } }
+          );
+        } else {
+          response = await api.post(
+            '/todos/add',
+            { title, description, startDate, targetDate: endDate },
+            {
+              headers: { user_id: userId },
+            }
+          );
+        }
         setSuccess(true);
         setSuccessMessage(response.data.message);
         setTimeout(() => {
@@ -84,13 +122,13 @@ export default function CreateTodo({ history }) {
             <Input
               type="date"
               id="targetDate"
-              value={targetDate}
+              defaultValue={targetDate}
               placeholder="Enter a deadline"
               onChange={(e) => setTargetDate(e.target.value)}
             />
           </FormGroup>
           <FormGroup>
-            <Button>Add</Button>
+            <Button>{match.params.todoId ? 'Update' : 'Add'}</Button>
           </FormGroup>
         </Form>
         {success ? (

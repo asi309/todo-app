@@ -18,6 +18,7 @@ routes.post('/login', LoginController.store);
 //Todos
 routes.post('/todos/add', TodosController.createTodo);
 routes.get('/todos/:todoId', TodosController.getTodoById);
+routes.patch('/todos/:todoId', TodosController.editTodo);
 routes.get('/todos/', TodosController.getTodosByUser);
 routes.delete('/todos/delete/:todoId', TodosController.deleteTodo);
 

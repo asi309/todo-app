@@ -47,6 +47,50 @@ module.exports = {
     }
   },
 
+  async editTodo(req, res) {
+    const { title, description, startDate, targetDate } = req.body;
+    const { user_id } = req.headers;
+    try {
+      const user = await User.findById(user_id);
+
+      if (!user) {
+        return res.status(400).json({
+          message: 'User doesnot exist',
+        });
+      }
+
+      if (!title) {
+        return res.status(200).json({
+          message: 'Required field missing',
+        });
+      }
+
+      const existing_todo = await Todos.findOne({ title, user });
+
+      if (existing_todo) {
+        existing_todo.title = title;
+        existing_todo.description = description;
+        existing_todo.targetDate = targetDate;
+        existing_todo.startDate = startDate;
+
+        await existing_todo.save();
+
+        await existing_todo.populate('user', '-password').execPopulate();
+
+        return res.json({
+          message: 'Todo updated successfully',
+          todo: existing_todo
+        });
+      }
+
+      return res.status(200).json({
+        message: 'Todo doesnot exist'
+      });
+    } catch (error) {
+      throw Error(`Error while updating todo - ${error}`);
+    }
+  },
+
   async deleteTodo(req, res) {
     const { todoId } = req.params;
     const { user_id } = req.headers;

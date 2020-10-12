@@ -14,6 +14,7 @@ export default function Routes() {
         <Route path="/register" component={RegisterUser} />
         <Route path="/dashboard" component={Dashboard} />
         <Route path="/create" component={CreateTodo} />
+        <Route path="/edit/:todoId" component={CreateTodo} />
       </Switch>
     </BrowserRouter>
   );

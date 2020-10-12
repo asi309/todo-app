@@ -73,6 +73,12 @@ export default function Dashboard({ history }) {
                 <details>
                   <summary>Options</summary>
                   <Button
+                    color="primary"
+                    onClick={() => history.push(`/edit/${todo._id}`)}
+                  >
+                    Edit
+                  </Button>
+                  <Button
                     color="danger"
                     onClick={() => deleteHandler(todo._id)}
                   >
