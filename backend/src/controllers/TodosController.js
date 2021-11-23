@@ -1,167 +1,292 @@
+const jwt = require('jsonwebtoken');
+
 const Todos = require('../models/Todos');
 const User = require('../models/Users');
 
 module.exports = {
-  async createTodo(req, res) {
-    const { title, description, startDate, targetDate } = req.body;
-    const { user_id } = req.headers;
-    try {
-      const user = await User.findById(user_id);
-
-      if (!user) {
-        return res.status(400).json({
-          message: 'User doesnot exist',
-        });
-      }
-
-      if (!title) {
-        return res.status(200).json({
-          message: 'Required field missing',
-        });
-      }
-
-      const existing_todo = await Todos.findOne({ title, user });
-
-      if (!existing_todo) {
-        const todo = await Todos.create({
+  createTodo(req, res) {
+    jwt.verify(req.token, process.env.SECRET, async (err, authData) => {
+      if (err) {
+        res.status(401).send();
+      } else {
+        const {
           title,
           description,
-          startDate,
           targetDate,
-          user: user_id,
-        });
+          isRepeat,
+          isImportant,
+          isToday,
+          isPlanned,
+          isComplete,
+        } = req.body;
+        const { user_id } = req.headers;
+        try {
+          const user = await User.findById(user_id);
 
-        await todo.populate('user', '-password').execPopulate();
+          if (!user) {
+            return res.status(400).json({
+              message: 'User doesnot exist',
+            });
+          }
 
-        return res.json({
-          message: 'Todo created successfully',
-          todo,
-        });
+          if (!title) {
+            return res.status(200).json({
+              message: 'Please provide a title for your todo',
+            });
+          }
+
+          const todo = await Todos.create({
+            title,
+            description,
+            targetDate,
+            isRepeat,
+            isImportant,
+            isToday,
+            isPlanned,
+            isComplete,
+            user: user_id,
+          });
+
+          await todo.populate('user', '-password').execPopulate();
+
+          return res.json({
+            message: 'Todo created successfully',
+            todo,
+          });
+        } catch (error) {
+          throw Error(`Error while creating todo - ${error}`);
+        }
       }
-
-      return res.status(200).json({
-        message: 'Todo with title already exists',
-      });
-    } catch (error) {
-      throw Error(`Error while creating todo - ${error}`);
-    }
+    });
   },
 
-  async editTodo(req, res) {
-    const { title, description, startDate, targetDate } = req.body;
-    const { user_id } = req.headers;
-    try {
-      const user = await User.findById(user_id);
+  editTodo(req, res) {
+    jwt.verify(req.token, process.env.SECRET, async (err, authData) => {
+      if (err) {
+        res.status(401).send();
+      } else {
+        const {
+          title,
+          description,
+          targetDate,
+          isRepeat,
+          isImportant,
+          isToday,
+          isPlanned,
+          isComplete,
+        } = req.body;
+        const { user_id } = req.headers;
+        try {
+          const user = await User.findById(user_id);
 
-      if (!user) {
-        return res.status(400).json({
-          message: 'User doesnot exist',
-        });
+          if (!user) {
+            return res.status(400).json({
+              message: 'User doesnot exist',
+            });
+          }
+
+          if (!title) {
+            return res.status(200).json({
+              message: 'Required field missing',
+            });
+          }
+
+          const existing_todo = await Todos.findOne({ title, user });
+
+          if (existing_todo) {
+            existing_todo.title = title;
+            existing_todo.description = description;
+            existing_todo.targetDate = targetDate;
+            existing_todo.isRepeat = isRepeat;
+            existing_todo.isImportant = isImportant;
+            existing_todo.isToday = isToday;
+            existing_todo.isPlanned = isPlanned;
+            existing_todo.isComplete = isComplete;
+
+            await existing_todo.save();
+
+            await existing_todo.populate('user', '-password').execPopulate();
+
+            return res.json({
+              message: 'Todo updated successfully',
+              todo: existing_todo,
+            });
+          }
+
+          return res.status(200).json({
+            message: 'Todo doesnot exist',
+          });
+        } catch (error) {
+          throw Error(`Error while updating todo - ${error}`);
+        }
       }
-
-      if (!title) {
-        return res.status(200).json({
-          message: 'Required field missing',
-        });
-      }
-
-      const existing_todo = await Todos.findOne({ title, user });
-
-      if (existing_todo) {
-        existing_todo.title = title;
-        existing_todo.description = description;
-        existing_todo.targetDate = targetDate;
-        existing_todo.startDate = startDate;
-
-        await existing_todo.save();
-
-        await existing_todo.populate('user', '-password').execPopulate();
-
-        return res.json({
-          message: 'Todo updated successfully',
-          todo: existing_todo
-        });
-      }
-
-      return res.status(200).json({
-        message: 'Todo doesnot exist'
-      });
-    } catch (error) {
-      throw Error(`Error while updating todo - ${error}`);
-    }
+    });
   },
 
-  async deleteTodo(req, res) {
-    const { todoId } = req.params;
-    const { user_id } = req.headers;
+  getToday(req, res) {
+    jwt.verify(req.token, process.env.SECRET, async (err, authData) => {
+      if (err) {
+        res.status(401).send();
+      } else {
+        const { user_id } = req.headers;
 
-    try {
-      const user = await User.findById(user_id);
-      if (!user) {
-        return res.json({
-          message: 'Cannot delete todo',
-        });
+        try {
+          const user = await User.findById(user_id);
+          if (!user) {
+            return res.json({
+              message: 'Could not fetch todos for user.',
+            });
+          }
+
+          const todos = await Todos.find({ isToday: true });
+
+          return res.json(todos);
+        } catch (error) {
+          throw Error('Error while fetching todos for today - ' + error);
+        }
       }
-
-      await Todos.findByIdAndDelete({
-        _id: todoId,
-      });
-
-      return res.status(204).send();
-    } catch (error) {
-      return res.status(400).json({
-        message: `Error in deleting todo - ${error}`,
-      });
-    }
+    });
   },
 
-  async getTodoById(req, res) {
-    const { todoId } = req.params;
-    const { user_id } = req.headers;
+  getImportant(req, res) {
+    jwt.verify(req.token, process.env.SECRET, async (err, authData) => {
+      if (err) {
+        res.status(401).send();
+      } else {
+        const { user_id } = req.headers;
 
-    try {
-      const user = await User.findById(user_id);
-      if (!user_id) {
-        res.status(400).json({
-          message: 'Cannot fetch todo',
-        });
+        try {
+          const user = await User.findById(user_id);
+          if (!user) {
+            return res.json({
+              message: 'Could not fetch todos for user.',
+            });
+          }
+
+          const todos = await Todos.find({ isImportant: true });
+
+          return res.json(todos);
+        } catch (error) {
+          throw Error('Error while fetching todos for today - ' + error);
+        }
       }
-
-      const todo = await Todos.findOne({
-        _id: todoId,
-      });
-
-      if (todo) {
-        return res.json(todo);
-      }
-    } catch (error) {
-      return res.status(404).json({
-        message: `Todo not found - ${error}`,
-      });
-    }
+    });
   },
 
-  async getTodosByUser(req, res) {
-    const { user_id } = req.headers;
+  getPlanned(req, res) {
+    jwt.verify(req.token, process.env.SECRET, async (err, authData) => {
+      if (err) {
+        res.status(401).send();
+      } else {
+        const { user_id } = req.headers;
 
-    try {
-      const user = await User.findById(user_id);
+        try {
+          const user = await User.findById(user_id);
+          if (!user) {
+            return res.json({
+              message: 'Could not fetch todos for user.',
+            });
+          }
 
-      if (!user) {
-        return res.status(400).json({
-          message: 'Cannot fetch todo',
-        });
+          const todos = await Todos.find({ isPlanned: true });
+
+          return res.json(todos);
+        } catch (error) {
+          throw Error('Error while fetching todos for today - ' + error);
+        }
       }
+    });
+  },
 
-      const todos = await Todos.find({ user });
+  deleteTodo(req, res) {
+    jwt.verify(req.token, process.env.SECRET, async (err, authData) => {
+      if (err) {
+        res.status(401).send();
+      } else {
+        const { todoId } = req.params;
+        const { user_id } = req.headers;
 
-      if (todos) {
-        return res.json(todos);
+        try {
+          const user = await User.findById(user_id);
+          if (!user) {
+            return res.json({
+              message: 'Cannot delete todo',
+            });
+          }
+
+          await Todos.findByIdAndDelete({
+            _id: todoId,
+          });
+
+          return res.status(204).send();
+        } catch (error) {
+          return res.status(400).json({
+            message: `Error in deleting todo - ${error}`,
+          });
+        }
       }
-    } catch (error) {
-      res.status(400).json({
-        message: 'No todos yet',
-      });
-    }
+    });
+  },
+
+  getTodoById(req, res) {
+    jwt.verify(req.token, process.env.SECRET, async (err, authData) => {
+      if (err) {
+        res.status(401).send();
+      } else {
+        const { todoId } = req.params;
+        const { user_id } = req.headers;
+
+        try {
+          const user = await User.findById(user_id);
+          if (!user_id) {
+            res.status(400).json({
+              message: 'Cannot fetch todo',
+            });
+          }
+
+          const todo = await Todos.findOne({
+            _id: todoId,
+          });
+
+          if (todo) {
+            return res.json(todo);
+          }
+        } catch (error) {
+          return res.status(404).json({
+            message: `Todo not found - ${error}`,
+          });
+        }
+      }
+    });
+  },
+
+  getTodosByUser(req, res) {
+    jwt.verify(req.token, process.env.SECRET, async (err, authData) => {
+      if (err) {
+        res.status(401).send();
+      } else {
+        const { user_id } = req.headers;
+
+        try {
+          const user = await User.findById(user_id);
+
+          if (!user) {
+            return res.status(400).json({
+              message: 'Cannot fetch todo',
+            });
+          }
+
+          const todos = await Todos.find({ user });
+
+          if (todos) {
+            return res.json(todos);
+          }
+        } catch (error) {
+          res.status(400).json({
+            message: 'No todos yet',
+          });
+        }
+      }
+    });
   },
 };

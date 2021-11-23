@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const Users = require('../models/Users');
 
@@ -28,7 +29,16 @@ module.exports = {
           firstName: user.firstName,
           lastName: user.lastName,
         };
-        return res.json(userResponse);
+
+        return jwt.sign(
+          { user: userResponse },
+          process.env.SECRET,
+          (error, token) =>
+            res.json({
+              user: token,
+              user_id: userResponse._id,
+            })
+        );
       } else {
         return res.status(200).json({
           message:

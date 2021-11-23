@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const User = require('../models/Users');
 
@@ -34,14 +35,22 @@ module.exports = {
           password: hashedPassword,
         });
 
-        return res.json({
-          user: {
-            _id: user._id,
-            firstName,
-            lastName,
-            email: user.email,
-          },
-        });
+        const userResponse = {
+          _id: user._id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+        };
+
+        return jwt.sign(
+          { user: userResponse },
+          process.env.SECRET,
+          (error, token) =>
+            res.json({
+              user: token,
+              user_id: userResponse._id,
+            })
+        );
       }
 
       return res.status(200).json({
